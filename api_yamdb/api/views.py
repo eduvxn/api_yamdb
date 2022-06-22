@@ -7,16 +7,17 @@ from .serializers import (
     TitleSerializer
 )
 
-class titleViewsSet(viewsets.ModelViewSet):
+
+class TitleViewsSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
 
 
-class categoryViewsSet(viewsets.ModelViewSet):
+class CategoryViewsSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
-class genreViewsSet(viewsets.ModelViewSet):
+class GenreViewsSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
