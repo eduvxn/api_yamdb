@@ -1,11 +1,32 @@
 from rest_framework import viewsets
+
 from django.shortcuts import get_object_or_404
 
-from reviews.models import Comments, Review
-from .serializers import CommentsSerializer, ReviewSerializer
+from reviews.models import Category, Genre, Title, Comments, Review
+from .serializers import (
+    CategorySerializer,
+    GenreSerializer,
+    TitleSerializer,
+    CommentsSerializer,
+    ReviewSerializer
+)
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
+class TitleViewsSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+
+
+class CategoryViewsSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class GenreViewsSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    
+ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
@@ -31,4 +52,3 @@ class CommentsViewSet(viewsets.ModelViewSet):
         review_id = self.kwargs.get('review_id')
         review = get_object_or_404(Review, id=review_id)
         serializer.save(author=self.request.user, review=review)
-
