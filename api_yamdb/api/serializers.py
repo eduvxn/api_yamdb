@@ -4,7 +4,7 @@ from rest_framework import serializers
 from reviews.models import User, Title, Genre, Category
 
 
-class SignUpSerializer(serializers.Serializer):
+class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150, required=True)
     email = serializers.EmailField(max_length=254, required=True)
 
@@ -20,10 +20,21 @@ class SignUpSerializer(serializers.Serializer):
             )
         return username
 
+    class Meta:
+        model = User
+        fields = ('username', 'email')
 
-class AuthSerializer(serializers.Serializer):
+
+class AuthSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150)
     confirmation_code = serializers.CharField(max_length=255)
+
+    class Meta:
+        model = User
+        fields = (
+            'confirmation_code',
+            'username'
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):

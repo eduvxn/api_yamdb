@@ -37,8 +37,9 @@ class User(AbstractUser):
         null=True,
         verbose_name='Фамилия пользователя'
     )
-    bio = models.CharField(
+    bio = models.TextField(
         blank=True,
+        null=True,
         verbose_name='Информация о себе'
     )
     role = models.CharField(
@@ -58,7 +59,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == 'moderator' or self.is_superuser
+        return self.role == 'admin' or self.is_superuser
 
     class Meta:
         ordering = ('username',)
