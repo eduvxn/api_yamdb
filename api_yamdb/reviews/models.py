@@ -48,10 +48,6 @@ class User(AbstractUser):
         choices=roles,
         verbose_name='Роль'
     )
-    confirmation_code = models.CharField(
-        blank=True,
-        verbose_name='Код подтверждения учетной записи',
-    )
 
     @property
     def is_moderator(self):
