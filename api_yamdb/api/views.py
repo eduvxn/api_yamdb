@@ -7,6 +7,7 @@ from .serializers import (
     TitleSerializer
 )
 
+
 class titleViewsSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer

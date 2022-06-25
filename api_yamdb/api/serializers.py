@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from reviews.models import Title, Genre, Category
 
+
 class TitleSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField(read_only=True)
     genre = serializers.StringRelatedField(many=True, read_only=True)

@@ -12,5 +12,3 @@ router.register('categories', categoryViewsSet, basename='category')
 urlpatterns = [
     path('v1/', include(router.urls))
 ]
-
-
