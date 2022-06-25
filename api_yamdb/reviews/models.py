@@ -108,16 +108,22 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
-        related_name='titles'
+        related_name='titles',
+        null=True,
+        blank=True
     )
     description = models.CharField(max_length=100)
 
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)
+        User, on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Автор')
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE)
+        Title, on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Произведение')
     text = models.TextField()
     score = models.IntegerField(validators=[MinValueValidator(1),
                                             MaxValueValidator(10)])
@@ -134,9 +140,11 @@ class Review(models.Model):
 
 class Comments(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)
+        User, on_delete=models.CASCADE,
+        related_name='comments')
     review = models.ForeignKey(
-        Review, on_delete=models.CASCADE)
+        Review, on_delete=models.CASCADE,
+        related_name='comments')
     text = models.TextField()
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)

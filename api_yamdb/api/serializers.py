@@ -1,4 +1,4 @@
-from audioop import avg
+from django.db.models import Avg
 import re
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
@@ -103,7 +103,7 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_rating(self, obj):
-        rating = obj.reviews.aggregate(avg('score')).get('score__avg')
+        rating = obj.reviews.aggregate(Avg('score')).get('score__avg')
         if not rating:
             return rating
         return round(rating, 1)
