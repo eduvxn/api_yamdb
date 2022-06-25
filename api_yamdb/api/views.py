@@ -20,16 +20,19 @@ class TitleViewsSet(viewsets.ModelViewSet):
 
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    permission_classes = (IsAdminSuperuserOrReadOnly,)
 
 
 class CategoryViewsSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (IsAdminSuperuserOrReadOnly,)
 
 
 class GenreViewsSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = (IsAdminSuperuserOrReadOnly,)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -43,7 +46,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        url_path="me",
+        url_path='me',
         methods=['GET', 'PATCH'],
         permission_classes=[permissions.IsAuthenticated],
     )
@@ -100,6 +103,7 @@ def auth(request):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = (IsOwnerModeratorAdminSuperuserOrReadOnly,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -114,6 +118,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
+    permission_classes = (IsOwnerModeratorAdminSuperuserOrReadOnly,)
 
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')
