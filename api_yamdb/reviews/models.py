@@ -1,10 +1,7 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth import get_user_model
 
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
-User = get_user_model()
 
 
 roles = (
@@ -77,6 +74,33 @@ class User(AbstractUser):
         return self.username
 
 
+class Category(models.Model):
+    name = models.CharField()
+    slug = models.SlugField(unique=True)
+
+
+class Genre(models.Model):
+    name = models.CharField()
+    slug = models.SlugField(unique=True)
+
+
+class Title(models.Model):
+    name = models.CharField()
+    year = models.IntegerField()
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.PROTECT,
+        related_name='titles'
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.PROTECT,
+        related_name='titles',
+        unique=True
+    )
+    description = models.CharField()
+
+
 class Review(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)
@@ -104,30 +128,3 @@ class Comments(models.Model):
     text = models.TextField()
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
-
-
-class Category(models.Model):
-    name = models.CharField()
-    slug = models.SlugField(unique=True)
-
-
-class Genre(models.Model):
-    name = models.CharField()
-    slug = models.SlugField(unique=True)
-
-
-class Title(models.Model):
-    name = models.CharField()
-    year = models.IntegerField()
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.PROTECT,
-        related_name='titles'
-    )
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.PROTECT,
-        related_name='titles',
-        unique=True
-    )
-    description = models.CharField()
