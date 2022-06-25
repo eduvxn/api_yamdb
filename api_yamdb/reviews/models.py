@@ -1,10 +1,7 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth import get_user_model
 
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
-User = get_user_model()
 
 
 roles = (
@@ -44,7 +41,8 @@ class User(AbstractUser):
     )
     bio = models.CharField(
         blank=True,
-        verbose_name='Информация о себе'
+        verbose_name='Информация о себе',
+        max_length=150
     )
     role = models.CharField(
         max_length=50,
@@ -55,6 +53,7 @@ class User(AbstractUser):
     confirmation_code = models.CharField(
         blank=True,
         verbose_name='Код подтверждения учетной записи',
+        max_length=150
     )
 
     @property
@@ -78,6 +77,40 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, max_length=20)
+    search_fields = ['slug']
+
+    def __str__(self):
+        return self.name
+
+
+class Genre(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, max_length=20)
+    search_fields = ['slug']
+
+    def __str__(self):
+        return self.name
+
+
+class Title(models.Model):
+    name = models.CharField(max_length=20)
+    year = models.IntegerField()
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles'
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.PROTECT,
+        related_name='titles'
+    )
+    description = models.CharField(max_length=100)
 
 
 class Review(models.Model):
@@ -107,30 +140,3 @@ class Comments(models.Model):
     text = models.TextField()
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
-
-
-class Category(models.Model):
-    name = models.CharField()
-    slug = models.SlugField(unique=True)
-
-
-class Genre(models.Model):
-    name = models.CharField()
-    slug = models.SlugField(unique=True)
-
-
-class Title(models.Model):
-    name = models.CharField()
-    year = models.IntegerField()
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.PROTECT,
-        related_name='titles'
-    )
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.PROTECT,
-        related_name='titles',
-        unique=True
-    )
-    description = models.CharField()

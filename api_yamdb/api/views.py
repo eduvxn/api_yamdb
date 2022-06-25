@@ -26,7 +26,8 @@ class GenreViewsSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     
- class ReviewViewSet(viewsets.ModelViewSet):
+
+class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
