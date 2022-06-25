@@ -1,3 +1,4 @@
+from audioop import avg
 import re
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
@@ -90,10 +91,22 @@ class CommentsSerializer(serializers.ModelSerializer):
         read_only_fields = ("author",)
 
 
+
 class TitleSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField(read_only=True)
+    genre = serializers.StringRelatedField(many=True, read_only=True)
+    rating = serializers.SerializerMethodField()
+
+
     class Meta:
         model = Title
         fields = '__all__'
+
+    def get_rating(self, obj):
+        rating = obj.reviews.aggregate(avg('score')).get('score__avg')
+        if not rating:
+            return rating
+        return round(rating, 1)
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -105,4 +118,4 @@ class GenreSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        firlds = '__all__'
+        fields = '__all__'
