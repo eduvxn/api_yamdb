@@ -14,27 +14,33 @@ class Comment(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField()
-    slug = models.SlugField(unique=True)
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, max_length=20)
+    search_fields = ['slug']
+
+    def __str__(self):
+        return self.name
 
 
 class Genre(models.Model):
-    name = models.CharField()
-    slug = models.SlugField(unique=True)
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, max_length=20)
+    search_fields = ['slug']
+
+    def __str__(self):
+        return self.name
 
 
 class Title(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=20)
     year = models.IntegerField()
-    genre = models.ForeignKey(
-        Genre,
+    genre = models.ManyToManyField(
+        Genre,        
+        related_name='titles'
+    )
+    category = models.ForeignKey(
+        Category,
         on_delete=models.PROTECT,
         related_name='titles'
     )
-    categoriy = models.ForeignKey(
-        Category,
-        on_delete=models.PROTECT,
-        related_name='titles',
-        unique=True
-    )
-    description = models.CharField()
+    description = models.CharField(max_length=100)
