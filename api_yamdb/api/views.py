@@ -7,10 +7,11 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from reviews.models import Category, Genre, Title, User
+from reviews.models import Category, Genre, Title, User, Review
 from .serializers import (CategorySerializer, GenreSerializer,
                           TitleSerializer, SignUpSerializer,
-                          AuthSerializer, UserSerializer)
+                          AuthSerializer, UserSerializer,
+                          ReviewSerializer, CommentsSerializer)
 from .permissions import (IsOwnerModeratorAdminSuperuserOrReadOnly,
                           IsAdmin, IsAdminSuperuserOrReadOnly)
 
@@ -96,7 +97,6 @@ def auth(request):
         {'token': str(token)}, status=status.HTTP_200_OK
     )
 
-    
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
