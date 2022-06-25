@@ -97,7 +97,8 @@ def auth(request):
     )
 
     
- class ReviewViewSet(viewsets.ModelViewSet):
+
+class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
