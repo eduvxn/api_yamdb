@@ -2,7 +2,6 @@ from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 
-
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -17,6 +16,7 @@ from .permissions import (IsOwnerModeratorAdminSuperuserOrReadOnly,
 
 
 class TitleViewsSet(viewsets.ModelViewSet):
+
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
 
