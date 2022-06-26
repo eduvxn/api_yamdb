@@ -1,20 +1,28 @@
 from django.db.models import Avg
-import re
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
+from rest_framework.validators import UniqueValidator
 
 
 from reviews.models import User, Title, Genre, Category, Comments, Review
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150, required=True)
-    email = serializers.EmailField(max_length=254, required=True)
+    username = serializers.CharField(
+        max_length=150,
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    email = serializers.EmailField(
+        max_length=254,
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
 
-    def validate(self, username):
+    def validate_username(self, username):
         if username == 'me':
             raise serializers.ValidationError(
-                'Запрещенное имя пользователя.'
+                'Запрещенный никнейм'
             )
         return username
 
@@ -27,18 +35,23 @@ class AuthSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150)
     confirmation_code = serializers.CharField(max_length=255)
 
+    def validate_username(self, username):
+        if username == 'me':
+            raise serializers.ValidationError(
+                'Запрещенный никнейм'
+            )
+        return username
+
     class Meta:
         model = User
         fields = (
-            'confirmation_code',
-            'username'
+            'username',
+            'confirmation_code'
         )
 
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)
-    email = serializers.CharField(required=True)
-    role = serializers.StringRelatedField(read_only=True)
+    bio = serializers.CharField(required=False)
 
     class Meta:
         model = User
@@ -90,7 +103,6 @@ class TitleSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField(read_only=True)
     genre = serializers.StringRelatedField(many=True, read_only=True)
     rating = serializers.SerializerMethodField()
-
 
     class Meta:
         model = Title
