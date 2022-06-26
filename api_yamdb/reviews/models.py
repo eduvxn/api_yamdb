@@ -109,10 +109,9 @@ class Title(models.Model):
     description = models.CharField(max_length=100)
 
 
-
 class Review(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE
+        User, on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Автор')
     title = models.ForeignKey(
