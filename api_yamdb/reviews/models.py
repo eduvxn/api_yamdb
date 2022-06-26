@@ -17,7 +17,7 @@ class User(AbstractUser):
     username = models.CharField(
         max_length=150,
         unique=True,
-        verbose_name='Ник пользователя',
+        verbose_name='Никнейм пользователя',
         db_index=True
     )
     email = models.EmailField(
@@ -27,12 +27,14 @@ class User(AbstractUser):
     )
     first_name = models.CharField(
         max_length=150,
-        verbose_name='Имя пользователя'
+        verbose_name='Имя пользователя',
+        blank=True
     )
     last_name = models.CharField(
         max_length=150,
         null=True,
-        verbose_name='Фамилия пользователя'
+        verbose_name='Фамилия пользователя',
+        blank=True
     )
     bio = models.TextField(
         blank=True,
