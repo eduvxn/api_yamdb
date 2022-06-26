@@ -7,10 +7,12 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from reviews.models import Category, Genre, Review, Title, User
-from .serializers import (CategorySerializer, CommentsSerializer, GenreSerializer,
+from reviews.models import Category, Genre, Title, User, Review
+from .serializers import (CategorySerializer, GenreSerializer,
                           TitleSerializer, SignUpSerializer,
-                          AuthSerializer, UserSerializer, ReviewSerializer)
+                          AuthSerializer, UserSerializer,
+                          ReviewSerializer, CommentsSerializer)
+
 from .permissions import (IsOwnerModeratorAdminSuperuserOrReadOnly,
                           IsAdmin, IsAdminSuperuserOrReadOnly)
 
@@ -19,16 +21,19 @@ class TitleViewsSet(viewsets.ModelViewSet):
 
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    permission_classes = (IsAdminSuperuserOrReadOnly,)
 
 
 class CategoryViewsSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (IsAdminSuperuserOrReadOnly,)
 
 
 class GenreViewsSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = (IsAdminSuperuserOrReadOnly,)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -42,7 +47,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        url_path="me",
+        url_path='me',
         methods=['GET', 'PATCH'],
         permission_classes=[permissions.IsAuthenticated],
     )
@@ -96,7 +101,6 @@ def auth(request):
         {'token': str(token)}, status=status.HTTP_200_OK
     )
 
-    
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer

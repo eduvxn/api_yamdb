@@ -50,11 +50,6 @@ class User(AbstractUser):
         choices=roles,
         verbose_name='Роль'
     )
-    confirmation_code = models.CharField(
-        blank=True,
-        verbose_name='Код подтверждения учетной записи',
-        max_length=150
-    )
 
     @property
     def is_moderator(self):
@@ -77,7 +72,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
 
 
 class Category(models.Model):
