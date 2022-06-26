@@ -16,11 +16,6 @@ class SignUpSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Запрещенное имя пользователя.'
             )
-        if not re.match(r'^[\w.@+-]+\Z', username):
-            raise serializers.ValidationError(
-                ('Допустимые символы - латинский алфавит и '
-                 'символы @ / . / + / - / _')
-            )
         return username
 
     class Meta:
@@ -89,7 +84,6 @@ class CommentsSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'author', 'pub_date')
         model = Comments
         read_only_fields = ("author",)
-
 
 
 class TitleSerializer(serializers.ModelSerializer):

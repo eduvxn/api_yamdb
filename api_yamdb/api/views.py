@@ -54,7 +54,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def me_page(self, request):
         serializer = UserSerializer(request.user)
         if request.method == 'PATCH':
-            serializer = UserSerializer(
+            serializer = SignUpSerializer(
                 request.user, data=request.data, partial=True
             )
             serializer.is_valid(raise_exception=True)
