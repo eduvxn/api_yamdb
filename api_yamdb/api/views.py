@@ -100,7 +100,7 @@ def auth(request):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsOwnerModeratorAdminSuperuserOrReadOnly,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -115,7 +115,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsOwnerModeratorAdminSuperuserOrReadOnly,)
 
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')
