@@ -14,11 +14,6 @@ roles = (
 class User(AbstractUser):
     """Модель пользователя"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.is_superuser:
-            self.role = 'admin'
-
     username = models.CharField(
         max_length=150,
         unique=True,
@@ -102,9 +97,11 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
-        related_name='titles'
+        related_name='titles',
+        null=True,
+        blank=True
     )
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=100, null=True)
 
 
 

@@ -1,5 +1,4 @@
 from audioop import avg
-import re
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
@@ -15,11 +14,6 @@ class SignUpSerializer(serializers.ModelSerializer):
         if username == 'me':
             raise serializers.ValidationError(
                 'Запрещенное имя пользователя.'
-            )
-        if not re.match(r'^[\w.@+-]+\Z', username):
-            raise serializers.ValidationError(
-                ('Допустимые символы - латинский алфавит и '
-                 'символы @ / . / + / - / _')
             )
         return username
 
@@ -89,7 +83,6 @@ class CommentsSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'author', 'pub_date')
         model = Comments
         read_only_fields = ("author",)
-
 
 
 class TitleSerializer(serializers.ModelSerializer):
