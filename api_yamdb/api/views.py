@@ -1,39 +1,70 @@
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, permissions, status
+from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
+                                   ListModelMixin)
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters
 
 from reviews.models import Category, Genre, Title, User, Review
 from .serializers import (CategorySerializer, GenreSerializer,
                           TitleSerializer, SignUpSerializer,
                           AuthSerializer, UserSerializer,
-                          ReviewSerializer, CommentsSerializer)
+                          ReviewSerializer, CommentsSerializer,
+                          TitleCreateSerializer)
 
 from .permissions import (IsOwnerModeratorAdminSuperuserOrReadOnly,
                           IsAdmin, IsAdminSuperuserOrReadOnly)
+
+from .filters import TitleFilter
 
 
 class TitleViewsSet(viewsets.ModelViewSet):
 
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
     permission_classes = (IsAdminSuperuserOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        if self.action in ('create', 'update', 'partial_update'):
+            return TitleCreateSerializer
+        return TitleSerializer
 
 
-class CategoryViewsSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
+class CreateListDestroyViewSet(ListModelMixin,
+                               CreateModelMixin,
+                               DestroyModelMixin,
+                               GenericViewSet):
+    pass
+
+
+class CategoryViewsSet(CreateListDestroyViewSet):
+    queryset = Category.objects.all().order_by('id')
     serializer_class = CategorySerializer
     permission_classes = (IsAdminSuperuserOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
 
-class GenreViewsSet(viewsets.ModelViewSet):
+class GenreViewsSet(CreateListDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminSuperuserOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class UserViewSet(viewsets.ModelViewSet):

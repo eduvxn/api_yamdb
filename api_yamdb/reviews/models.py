@@ -74,7 +74,6 @@ class User(AbstractUser):
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, max_length=20)
-    search_fields = ['slug']
 
     def __str__(self):
         return self.name
@@ -83,7 +82,6 @@ class Category(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, max_length=20)
-    search_fields = ['slug']
 
     def __str__(self):
         return self.name
@@ -94,6 +92,7 @@ class Title(models.Model):
     year = models.IntegerField()
     genre = models.ManyToManyField(
         Genre,
+        blank=True,
         related_name='titles'
     )
     category = models.ForeignKey(
