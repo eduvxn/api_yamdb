@@ -1,36 +1,68 @@
 import csv
+import os
+import sys
 
-from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management import BaseCommand
 
-from reviews.models import Category, Comment, Genre, Review, Title, User
+from api_yamdb.settings import CSV_DIR
+from reviews.models import (User, Category, Genre,
+                            Title, Review, Comments, GenreTitle)
 
-Models = {
-    User: 'users.csv',
-    Category: 'category.csv',
-    Title: 'titles.csv',
-    Genre: 'genre.csv',
-    Review: 'review.csv',
-    Comment: 'comments.csv',
-    # Title.genre.through: 'genre_title.csv',
+FILENAMES_AND_MODELS = {
+    'users': User,
+    'category': Category,
+    'genre': Genre,
+    'titles': Title,
+    'review': Review,
+    'comments': Comments,
+    'genre_title': GenreTitle,
+}
+
+FIELDS = {
+    'author': ('author', User),
+    'category': ('category', Category),
+    'genre_id': ('genre', Genre),
+    'title_id': ('title', Title),
+    'review_id': ('review', Review),
 }
 
 
+def open_file(filename):
+    file = filename + '.csv'
+    path = os.path.join(CSV_DIR, file)
+    with (open(path, encoding='utf-8')) as file:
+        return list(csv.reader(file))
+
+
+def change_foreign_values(data):
+    copy_data = data.copy()
+    for field_key, field_value in data.items():
+        if field_key in FIELDS.keys():
+            field_key0 = FIELDS[field_key][0]
+            copy_data[field_key0] = FIELDS[field_key][1].objects.get(
+                pk=field_value)
+    return copy_data
+
+
+def load(filename, model):
+    data = open_file(filename)
+    rows = data[1:]
+    for row in rows:
+        data_csv = dict(zip(data[0], row))
+        data_csv = change_foreign_values(data_csv)
+        try:
+            table = model(**data_csv)
+            table.save()
+        except ValueError:
+            sys.stdout.write(f'ValueError while loading\n')
+            break
+    sys.stdout.write(f'Data loaded successfully\n')
+
+
 class Command(BaseCommand):
-    help = 'Can load csv-files to DB'
 
     def handle(self, *args, **options):
 
-        for model, csv_files in Models.items():
-            with open(
-                f'{settings.STATICFILES_DIRS}/data/{csv_files}',
-                'r',
-                encoding='utf-8'
-            ) as csv_file:
-                reader = csv.DictReader(csv_file)
-                model.objects.bulk_create(
-                    model(**data) for data in reader
-                )
-            self.stdout.write(
-                f'Data for {model.__name__} uploaded')
-        return('Data uploaded successfully')
+        for key, value in FILENAMES_AND_MODELS.items():
+            sys.stdout.write(f'Data for {key} loading\n')
+            load(key, value)
