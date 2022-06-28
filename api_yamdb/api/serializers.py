@@ -1,10 +1,12 @@
 from django.db.models import Avg
+
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
 
-from reviews.models import User, Title, Genre, Category, Comments, Review
+from reviews.models import (
+    User, Title, Genre, Category, Comments, Review)
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -50,6 +52,14 @@ class AuthSerializer(serializers.ModelSerializer):
         )
 
 
+class EditProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = User
+        read_only_fields = ('role',)
+
+
 class UserSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(required=False)
 
@@ -79,13 +89,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                 'Вы уже написали отзыв к этому произведению.'
             )
         return data
-
-    def validate_score(self, value):
-        if not 1 <= value <= 10:
-            raise serializers.ValidationError(
-                'Оценкой может быть целое число в диапазоне от 1 до 10.'
-            )
-        return value
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -120,8 +123,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'rating',
-                  'description', 'genre', 'category')
+        fields = '__all__'
 
     def get_rating(self, obj):
         rating = obj.reviews.aggregate(Avg('score')).get('score__avg')
@@ -142,5 +144,5 @@ class TitleCreateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('__all__')
+        fields = '__all__'
         model = Title
