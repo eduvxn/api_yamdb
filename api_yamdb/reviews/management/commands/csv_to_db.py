@@ -54,9 +54,9 @@ def load(filename, model):
             table = model(**data_csv)
             table.save()
         except ValueError:
-            sys.stdout.write(f'ValueError while loading\n')
+            sys.stdout.write('ValueError while loading\n')
             break
-    sys.stdout.write(f'Data loaded successfully\n')
+    sys.stdout.write('Data loaded successfully\n')
 
 
 class Command(BaseCommand):

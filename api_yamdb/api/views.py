@@ -18,7 +18,7 @@ from .serializers import (CategorySerializer, GenreSerializer,
                           TitleSerializer, SignUpSerializer,
                           AuthSerializer, UserSerializer,
                           ReviewSerializer, CommentsSerializer,
-                          TitleCreateSerializer)
+                          TitleCreateSerializer, EditProfileSerializer)
 
 from .permissions import (IsOwnerModeratorAdminSuperuserOrReadOnly,
                           IsAdmin, IsAdminSuperuserOrReadOnly)
@@ -48,7 +48,7 @@ class CreateListDestroyViewSet(ListModelMixin,
 
 
 class CategoryViewsSet(CreateListDestroyViewSet):
-    queryset = Category.objects.all().order_by('id')
+    queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminSuperuserOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -87,19 +87,14 @@ class UserViewSet(viewsets.ModelViewSet):
         if request.method != 'PATCH':
             serializer = self.get_serializer(user)
             return Response(serializer.data)
-        serializer = UserSerializer(
+        serializer = EditProfileSerializer(
             user,
             context={'request': request},
             data=request.data,
             partial=True
         )
         serializer.is_valid(raise_exception=True)
-        if self.request.user.role == (
-                user.is_admin or self.request.user.is_superuser
-        ):
-            serializer.save()
-        else:
-            serializer.save(role=user.role)
+        serializer.save()
         return Response(
             serializer.data,
             status=status.HTTP_200_OK)
@@ -110,18 +105,14 @@ class UserViewSet(viewsets.ModelViewSet):
 def signup(request):
     serializer = SignUpSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
-        username = serializer.data.get('username')
-        email = serializer.data.get('email')
-        user = User.objects.create(
-            username=username,
-            email=email
-        )
+        serializer.save()
+        user = User.objects.get(username=serializer.validated_data['username'])
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
             subject='Код подтверждения YaMDb',
             message=f'Ваш код подтверждения: {confirmation_code}',
             from_email='admin@yamdb.com',
-            recipient_list=[email]
+            recipient_list=[user.email]
         )
         return Response(
             serializer.data,
@@ -156,13 +147,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerModeratorAdminSuperuserOrReadOnly,)
 
     def get_queryset(self):
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         return title.reviews.all()
 
     def perform_create(self, serializer):
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
 
 
@@ -171,11 +160,9 @@ class CommentsViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerModeratorAdminSuperuserOrReadOnly,)
 
     def get_queryset(self):
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, id=review_id)
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         return review.comments.all()
 
     def perform_create(self, serializer):
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, id=review_id)
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
